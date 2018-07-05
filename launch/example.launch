@@ -1,0 +1,53 @@
+<launch>
+  <!-- <arg name="imu_topic" default="/imu/data" /> -->
+
+  <!-- <arg name="imu_topic" default="/imu/data" /> -->
+
+  <!-- Include other launch files -->
+  <!-- <include file="$(find loam_velodyne)/loam_velodyne_mine.launch" /> -->
+
+  <machine name="foo" address="foo-address" env-loader="/opt/ros/indigo/env.sh" user="someone"/>
+
+  <node machine="foo" name="footalker" pkg="test_ros" type="talker.py" />
+
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_to_laser_broadcaster" args="0 0 0 0 0 0 base_frame laser 100"/>
+
+  <!-- robot state publisher -->
+  <!-- <param name="robot_description" textfile="$(find cartographer_ros)/urdf/2dLaser_imu.urdf" /> -->
+  <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" /> -->
+
+  <node pkg="example" name="example" type="example_node" output="screen"> <!-- clear_params="true" -->
+    <!-- <rosparam command="load" file="$(find robot_localization)/params/ekf_hector_imu.yaml" /> -->
+
+    <arg name="launch_prefix"           default=""/>              <!-- for debugging purpose, it fills launch-prefix tag of the nodes -->
+
+    <!-- IDs -->
+
+    <!-- input topics -->
+    <param name="imu_topic" value="$(arg imu_topic)" />
+
+    <!-- flag for publish tf -->
+    <param name="publish_tf"       type="bool" value="true" />
+
+    <!-- Remapping -->
+    <!-- <remap from="imu" to="imu/data" /> -->
+    <!-- <remap from="points2" to="velodyne_points" /> -->
+  </node>
+
+  <!-- Use the following if you want to have argv variable filled instead of using getParam -->
+  <!-- <node pkg="example" name="example" type="example_node" args="$(arg imu_topic)" output="screen"> -->
+
+  <!--  run your node in a gdb in a separate xterm window, manually type run to start it  -->
+  <node pkg="example" name="example" type="example_node" args="$(arg imu_topic)" output="screen" launch-prefix="xterm -e gdb --args" >
+
+  <!-- run your node in gdb in the same xterm as your launch without having to type run to start it  -->
+  <node pkg="example" name="example" type="example_node" args="$(arg imu_topic)" output="screen" launch-prefix="gdb -ex run --args" >
+
+  <!-- run your node in a separate xterm window  -->
+  <node pkg="example" name="example" type="example_node" args="$(arg imu_topic)" output="screen" launch-prefix="xterm -e" launch-prefix="$(arg launch_prefix)">
+
+  <!-- Launch node for visualization -->
+  <!-- <node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" /> -->
+
+</launch>
